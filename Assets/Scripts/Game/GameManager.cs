@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Gameplay")]
     [SerializeField] private int moveCounter = 0;
+
     public int MoveCounter => moveCounter; // Только для чтения
     public int MaxMoves { get; set; }  // Значение устанавливается из LevelCreator
 
@@ -47,11 +48,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        uiManager?.UpdateMoveCounter(moveCounter);
-    }
-
     private void HandleRingClicked(Ring ring)
     {
         if (ring.IsTopRing())
@@ -84,11 +80,18 @@ public class GameManager : MonoBehaviour
                     currentTower.RemoveTopRing();
                 }
                 tower.AddRing(selectedRing);
+                selectedRing.GetComponent<Ring>().SetHighlight(false);
                 selectedRing = null;
 
                 moveCounter++;
                 Debug.Log("Ход: " + moveCounter);
-                uiManager?.UpdateMoveCounter(moveCounter);
+
+                // Обновляем счётчик ходов в UI
+                if (uiManager != null && !uiManager.IsStartImageActive())
+                {
+                    uiManager.UpdateMoveCounter(moveCounter);
+                    uiManager.RestartGameBtn.SetActive(true);
+                }
 
                 CheckGameStatus();
             }
@@ -109,18 +112,30 @@ public class GameManager : MonoBehaviour
     {
         if (destinationTower != null && destinationTower.RingsCount() == levelCreator.TotalRings)
         {
+            // Сохраняем результат только при победе
+            SaveManager.SaveLevelResult(levelCreator.CurrentLevel, moveCounter);
+
             Debug.Log("Поздравляем, вы выиграли! Всего ходов: " + moveCounter);
-            uiManager?.ShowVictory();
+            uiManager.ShowVictory();
         }
         else if (moveCounter >= MaxMoves)
         {
             Debug.Log("Превышено максимальное количество ходов. Игра окончена.");
-            uiManager?.ShowGameOver();
+            uiManager.ShowGameOver();
         }
     }
 
     public void MenuBtn()
     {
         SceneManager.LoadScene(0);
+    }
+
+    public void ResetGame()
+    {
+        moveCounter = 0;
+        if (uiManager != null)
+        {
+            uiManager.UpdateMoveCounter(moveCounter);
+        }
     }
 }

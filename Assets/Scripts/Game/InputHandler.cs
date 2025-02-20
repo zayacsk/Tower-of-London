@@ -9,6 +9,8 @@ public class InputHandler : MonoBehaviour
     public event TowerClickEvent OnTowerClicked;
 
     private Camera cam;
+    // Храним ссылку на текущее выделенное кольцо
+    private Ring currentHighlightedRing = null;
 
     private void Awake()
     {
@@ -41,6 +43,14 @@ public class InputHandler : MonoBehaviour
                 Ring ring = hit.collider.GetComponentInParent<Ring>();
                 if (ring != null)
                 {
+                    // Сброс подсветки у предыдущего выделенного кольца
+                    if (currentHighlightedRing != null && currentHighlightedRing != ring)
+                    {
+                        currentHighlightedRing.SetHighlight(false);
+                    }
+                    // Подсвечиваем текущее кольцо и сохраняем ссылку
+                    ring.SetHighlight(true);
+                    currentHighlightedRing = ring;
                     OnRingClicked?.Invoke(ring);
                 }
             }

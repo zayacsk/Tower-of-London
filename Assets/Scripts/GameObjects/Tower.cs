@@ -7,7 +7,7 @@ public class Tower : MonoBehaviour
 
     [Header("Tower Settings")]
     [SerializeField] private float fixedXPosition = 0f;
-    public float FixedXPosition => fixedXPosition; // Публичное свойство для доступа
+    public float FixedXPosition => fixedXPosition;
 
     [SerializeField] private float ringHeight = 0.5f;
 
@@ -48,20 +48,58 @@ public class Tower : MonoBehaviour
 
     private void UpdateRingPositions()
     {
+        float currentHeight = 0f; // Текущая «вершина» башни, от которой будем ставить следующее кольцо
+
         for (int i = 0; i < rings.Count; i++)
         {
             Ring ring = rings[i];
-            float ringYPosition = i * ringHeight + 0.3f;
+            Renderer rend = ring.GetComponent<Renderer>();
+            if (rend == null)
+            {
+                Debug.LogWarning($"У кольца {ring.name} нет Renderer!");
+                continue;
+            }
+
+            // Полная высота кольца по оси Y
+            float ringFullHeight = rend.bounds.size.y;
+            // Половина высоты кольца — чтобы учесть смещение pivot (если он в центре)
+            float halfHeight = ringFullHeight / 2f;
+
+            // Ставим кольцо так, чтобы его нижняя грань оказалась на currentHeight
+            // => центр кольца будет на (currentHeight + halfHeight)
+            float ringYPosition = currentHeight + halfHeight;
+
             ring.transform.position = new Vector3(
                 fixedXPosition,
                 ringYPosition,
                 transform.position.z
             );
+
+            // Сдвигаем «вершину» на полную высоту кольца, чтобы следующее кольцо встало выше
+            currentHeight += ringFullHeight;
         }
     }
 
     public int RingsCount()
     {
         return rings.Count;
+    }
+
+    public void ClearRings()
+    {
+        // Создаем временный список для хранения колец, которые нужно удалить
+        List<Ring> ringsToRemove = new List<Ring>(rings);
+
+        // Очищаем основной список колец
+        rings.Clear();
+
+        // Удаляем каждый объект кольца
+        foreach (Ring ring in ringsToRemove)
+        {
+            if (ring != null)
+            {
+                Destroy(ring.gameObject);
+            }
+        }
     }
 }

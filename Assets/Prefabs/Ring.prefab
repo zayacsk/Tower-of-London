@@ -11,12 +11,12 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: cc4130b4cdf02ad42a94d44c851c46bf,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cc4130b4cdf02ad42a94d44c851c46bf,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.25
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cc4130b4cdf02ad42a94d44c851c46bf,
         type: 3}
@@ -104,7 +104,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f54c31657f3256d4d8934e1838c5927e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 2
+  id: 0
+  highlightedMaterial: {fileID: 2100000, guid: b52fbd5d094584c40858f5f55d208704, type: 2}
 --- !u!64 &6098291603639675625
 MeshCollider:
   m_ObjectHideFlags: 0
